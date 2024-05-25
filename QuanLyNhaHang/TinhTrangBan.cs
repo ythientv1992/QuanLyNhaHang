@@ -1,13 +1,23 @@
-﻿using System;
+﻿using iText.IO.Font.Constants;
+using iText.Kernel.Pdf;
+using iText.Layout.Element;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using System.IO;
+using iText.Kernel.Exceptions;
 
 namespace QuanLyNhaHang
 {
@@ -95,6 +105,82 @@ namespace QuanLyNhaHang
         private void TinhTrangBan_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void ban1_Click(object sender, EventArgs e)
+        {
+            // Xóa dữ liệu cũ trong ListBox
+            listBox1.Items.Clear();
+
+            // Kết nối đến cơ sở dữ liệu và truy vấn dữ liệu từ bảng "Bàn 1"
+            string connectionString = @"Data Source=WolfLord\SQLEXPRESS;Initial Catalog=QL_NhaHang;Integrated Security=True";
+            string query = "SELECT TenMonAn, SoLuong FROM Table1";
+            // Sử dụng dấu ngoặc kép cho tên bảng
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    // Đọc từng dòng dữ liệu và thêm vào ListBox với định dạng "Tên Món Ăn xSố lượng"
+                    while (reader.Read())
+                    {
+                        string tenMonAn = reader["TenMonAn"].ToString();
+                        int soLuong = Convert.ToInt32(reader["SoLuong"]);
+                        string item = $"{tenMonAn} x{soLuong}";
+                        listBox1.Items.Add(item);
+                    }
+
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi: " + ex.Message);
+                }
+            }
+        }
+
+        private void XuatHoaDon_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Tạo một tệp PDF mới
+                string filePath = @"D:\FileTesting\bill.pdf";
+                PdfWriter writer = new PdfWriter(filePath);
+                PdfDocument pdf = new PdfDocument(writer);
+                Document document = new Document(pdf);
+
+                // Thêm tiêu đề cho hóa đơn
+                Paragraph title = new Paragraph("Hóa Đơn")
+                    .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER)
+                    .SetFontSize(16)
+                    .SetBold();
+                document.Add(title);
+
+                // Thêm nội dung từ ListBox vào tài liệu PDF
+                foreach (var item in listBox1.Items)
+                {
+                    Paragraph paragraph = new Paragraph(item.ToString());
+                    document.Add(paragraph);
+                }
+
+                // Đóng tài liệu PDF
+                document.Close();
+
+                MessageBox.Show("Xuất hóa đơn thành công!");
+            }
+            catch (PdfException ex)
+            {
+                MessageBox.Show("PdfException: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception: " + ex.Message);
+            }
         }
     }
 }

@@ -26,7 +26,6 @@ namespace QuanLyNhaHang
         {
             button1.FlatAppearance.BorderSize = 0;
             button2.FlatAppearance.BorderSize = 0;
-            button3.FlatAppearance.BorderSize = 0;
 
             // Đặt FlatStyle thành Flat để loại bỏ viền
             btExit.FlatStyle = FlatStyle.Flat;
@@ -66,10 +65,7 @@ namespace QuanLyNhaHang
             loadform(new TinhTrangBan());
         }
 
-        private void button3_Click_1(object sender, EventArgs e)
-        {
-            loadform(new Bep());
-        }
+        
 
         private void panel3_Paint(object sender, PaintEventArgs e)
         {
